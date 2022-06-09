@@ -24,12 +24,10 @@ import okhttp3.Headers;
 public class ComposeActivity extends AppCompatActivity {
 
     public static final String TAG = "ComposeActivity";
-    public static final int MAX_TWEET_LENGTH = 140;
+    public static final int MAX_TWEET_LENGTH = 280;
 
     EditText etCompose;
     Button btnTweet;
-    TextInputLayout tvCount;
-
     TwitterClient client;
 
     @Override
@@ -39,10 +37,6 @@ public class ComposeActivity extends AppCompatActivity {
 
         etCompose = findViewById(R.id.etCompose);
         btnTweet = findViewById(R.id.btnTweet);
-        tvCount = findViewById(R.id.tvCount);
-        tvCount.setCounterEnabled(true);
-        tvCount.setCounterMaxLength(MAX_TWEET_LENGTH);
-        //tvCount.setCounterTextAppearance(etCompose.getText().length());
 
         client = TwitterApp.getRestClient(this);
         // Set click listener on button
