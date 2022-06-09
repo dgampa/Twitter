@@ -28,8 +28,6 @@ public class Tweet {
         }
         tweet.createdAt = jsonObject.getString("created_at");
         tweet.user = User.fromJson(jsonObject.getJSONObject("user"));
-
-
         if(!jsonObject.getJSONObject("entities").has("media")) {
             tweet.img ="none";
         } else {
@@ -37,7 +35,6 @@ public class Tweet {
         }
         return tweet;
     }
-
     public static List<Tweet> fromJsonArray(JSONArray jsonArray) throws JSONException {
         List<Tweet> tweets = new ArrayList<>();
         for(int i=0; i< jsonArray.length(); i++){

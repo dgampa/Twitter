@@ -7,10 +7,11 @@
     tools:context=".TimelineActivity">
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/scRefresh"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:layout_alignBottom="@+id/bLogout"
+        android:layout_marginBottom="5dp">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvTweets"
@@ -19,14 +20,13 @@
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <Button
+        android:id="@+id/bLogout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentTop="false"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="515dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="21dp"
+        android:layout_marginTop="5dp"
         android:onClick="onLogoutButton"
         android:text="@string/logout_label" />
 

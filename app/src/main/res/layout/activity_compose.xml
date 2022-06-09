@@ -28,12 +28,13 @@
             android:layout_marginEnd="5dp"
             android:ems="10"
             android:gravity="start|top"
-            android:hint="What's Up?"
+            android:hint="@string/hint"
             android:inputType="textMultiLine"
             android:minLines="5"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="SpeakableTextPresentCheck" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -43,7 +44,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="5dp"
+        android:background="@drawable/roundstyle"
+        android:backgroundTint="#45A4EF"
         android:text="@string/tweet_label"
+        android:textStyle="normal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvCount" />
 </androidx.constraintlayout.widget.ConstraintLayout>
