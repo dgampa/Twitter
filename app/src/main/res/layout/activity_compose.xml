@@ -47,6 +47,7 @@
         android:background="@drawable/roundstyle"
         android:backgroundTint="#45A4EF"
         android:text="@string/tweet_label"
+        android:textColor="#FFFFFF"
         android:textStyle="normal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvCount" />

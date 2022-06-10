@@ -15,6 +15,7 @@ public class Tweet {
     public String createdAt;
     public User user;
     public String img;
+    public long id;
 
     // empty constructor required by the Parceler library
     public Tweet(){}
@@ -28,6 +29,7 @@ public class Tweet {
         }
         tweet.createdAt = jsonObject.getString("created_at");
         tweet.user = User.fromJson(jsonObject.getJSONObject("user"));
+        tweet.id= jsonObject.getLong("id");
         if(!jsonObject.getJSONObject("entities").has("media")) {
             tweet.img ="none";
         } else {

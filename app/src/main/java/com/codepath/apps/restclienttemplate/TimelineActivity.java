@@ -9,12 +9,15 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
+import com.codepath.apps.restclienttemplate.databinding.ActivityTimelineBinding;
 import com.codepath.apps.restclienttemplate.models.Tweet;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 
@@ -22,8 +25,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.parceler.Parcels;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import okhttp3.Headers;
 
@@ -32,6 +38,9 @@ public class TimelineActivity extends AppCompatActivity {
     public static final String TAG = "TimelineActivity";
     private final int REQUEST_CODE = 20;
     private SwipeRefreshLayout swipeContainer;
+    private ActivityTimelineBinding binding;
+
+    private EndlessRecyclerViewScrollListener scrollListener;
 
     TwitterClient client;
     RecyclerView rvTweets;
@@ -41,9 +50,11 @@ public class TimelineActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_timeline);
+        binding = ActivityTimelineBinding.inflate(getLayoutInflater());
+        View view = binding.getRoot();
+        setContentView(view);
         // Lookup the swipe container view
-        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.scRefresh);
+        swipeContainer = binding.scRefresh;
         // Setup refresh listener which triggers new data loading
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -59,14 +70,53 @@ public class TimelineActivity extends AppCompatActivity {
         client = TwitterApp.getRestClient(this);
 
         // Find the recycler view
-        rvTweets = findViewById(R.id.rvTweets);
+        rvTweets = binding.rvTweets;
+        populateHomeTimeline();
+
         // Init the lis of tweets and adapter
-        tweets = new ArrayList<Tweet>();
+        tweets = new ArrayList<>();
         adapter = new TweetsAdapter(this, tweets);
         // Setup layout manager and the adapter for RecyclerView
-        rvTweets.setLayoutManager(new LinearLayoutManager(this));
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        rvTweets.setLayoutManager(linearLayoutManager);
         rvTweets.setAdapter(adapter);
-        populateHomeTimeline();
+        // Retain an instance so that you can call 'resetState()' for fresh searches
+        scrollListener = (new EndlessRecyclerViewScrollListener(linearLayoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                loadNextData(page);
+            }
+        });
+        // Adds the scroll listener to RecyclerView
+        rvTweets.addOnScrollListener(scrollListener);
+    }
+
+    private void loadNextData(int offset) {
+        client.getHomeTimeline(new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Headers headers, JSON json) {
+                Log.i(TAG, "onSuccess!" + json.toString());
+                JSONArray jsonArray = json.jsonArray;
+                try {
+                    int curSize = adapter.getItemCount();
+                    tweets.addAll(Tweet.fromJsonArray(jsonArray));
+
+                    rvTweets.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            adapter.notifyItemRangeInserted(curSize, tweets.size() - 1);
+                        }
+                    });
+                } catch (JSONException e) {
+                    Log.e(TAG, "Json exception", e);
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+                Log.e(TAG, "onFailure" + response, throwable);
+            }
+        }, tweets.get(tweets.size() - 1).id);
     }
 
     // Your code to refresh the list here.
@@ -99,7 +149,8 @@ public class TimelineActivity extends AppCompatActivity {
                 Log.d("DEBUG", "Fetch timeline error: " + e.toString());
             }
 
-        });
+        }, 1535294603506593792L);
+        // maxId is a magic number
     }
 
     @Override
@@ -126,7 +177,9 @@ public class TimelineActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if(requestCode == REQUEST_CODE && resultCode == RESULT_OK){
             // Get data from the intent(tweet)
+            //Log.i(TAG, "Reached the onActivityResult before tweet");
             Tweet tweet = Parcels.unwrap(data.getParcelableExtra("tweet"));
+            //Log.i(TAG, "Reached the onActivityResult after tweet");
             // Update the RV with the tweet
             // Modify data source of tweets
             tweets.add(0, tweet);
@@ -145,8 +198,15 @@ public class TimelineActivity extends AppCompatActivity {
                 Log.i(TAG, "onSuccess!" + json.toString());
                 JSONArray jsonArray = json.jsonArray;
                 try {
+                    int curSize = adapter.getItemCount();
                     tweets.addAll(Tweet.fromJsonArray(jsonArray));
-                    adapter.notifyDataSetChanged();
+
+                    rvTweets.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            adapter.notifyItemRangeInserted(curSize, tweets.size() - 1);
+                        }
+                    });
                 } catch (JSONException e) {
                     Log.e(TAG, "Json exception", e);
                 }
@@ -156,8 +216,11 @@ public class TimelineActivity extends AppCompatActivity {
             public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
                 Log.e(TAG, "onFailure" + response, throwable);
             }
-        });
+        }, 1535294603506593792L);
+        // maxId is a magic number
     }
+
+
 
     public void onLogoutButton(View view) {
         // forget who's logged in

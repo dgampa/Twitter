@@ -25,6 +25,8 @@
         android:id="@+id/tvBody"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:autoLink="all"
+        android:linksClickable="true"
         android:layout_above="@+id/ivImage"
         android:layout_below="@+id/tvScreenName"
         android:layout_marginStart="5dp"
@@ -40,4 +42,5 @@
         android:layout_below="@+id/ivProfileImage"
         android:layout_marginTop="15dp"
         tools:srcCompat="@tools:sample/avatars" />
+
 </RelativeLayout>
