@@ -96,7 +96,7 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
             tvScreenName.setText(tweet.user.screenName+ "   *   "+getRelativeTimeAgo(tweet.createdAt));
             Glide.with(context).load(tweet.user.profileImageUrl).into(ivProfileImage);
 
-            if(tweet.img != "none"){
+            if(!tweet.img.equals("none")){
                 Glide.with(context).load(tweet.img).into(ivImage);
             }
             else{

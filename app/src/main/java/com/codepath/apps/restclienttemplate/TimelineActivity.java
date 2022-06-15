@@ -149,7 +149,7 @@ public class TimelineActivity extends AppCompatActivity {
                 Log.d("DEBUG", "Fetch timeline error: " + e.toString());
             }
 
-        }, 1535294603506593792L);
+        }, tweets.get(0).id);
         // maxId is a magic number
     }
 
